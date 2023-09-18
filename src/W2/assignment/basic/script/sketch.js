@@ -13,7 +13,7 @@ function draw() {
   noStroke();
 
   //벽
-  fill('#eb3782l');
+  fill('#0067a3');
   rect(0, 0, 1000);
 
   ///창문
@@ -32,7 +32,7 @@ function draw() {
   fill('#262d35');
   rect(240, 160, 30, 250);
 
-  //불빛
+  //불
   fill('#e0d59b');
   rect(110, 120, 60, 20);
   rect(190, 170, 40, 20);
