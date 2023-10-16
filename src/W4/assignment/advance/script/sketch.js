@@ -1,59 +1,54 @@
-let pos;
-let vel;
-let acc;
-let mv;
+let mover;
+let gravity;
+let mVec;
+let pMVec;
+let throwingForce;
 
 function setup() {
-  let canvas;
-  canvas = createCanvas(700, 700);
-  let canvasParent;
-  canvasParent = select('#mySketchGoesHere');
-  canvas.parent(canvasParent);
-  background('#F3EFFF');
+  setCanvasContainer('canvas', 1, 1, true);
 
-  mv = createVector();
+  mover = new Mover(width / 2, height / 2, 100);
+  gravity = createVector(0, 0.5);
+  throwingForce = createVector();
+  mVec = createVector();
+  pMVec = createVector();
 
-  pos = createVector(width / 2, height / 2);
-  vel = createVector(0, 0);
-  acc = createVector(0, 0);
+  background(255);
 }
 
 function draw() {
-  background('#F3EFFF');
-  display();
-  displayVectors();
-
-  vel.add(acc);
-  pos.add(vel);
-  vel.limit(5);
-
-  let mouse = createVector(mouseX, mouseY);
-  strokeWeight(2);
-  stroke('black');
-  line(pos.x, pos.y, mouseX, mouseY);
-
-  mv.x = mouseX;
-  mv.y = mouseY;
-
-  let cacc = p5.Vector.sub(mouse, pos);
-  cacc.setMag(0.1);
-  acc = cacc;
-
-  if (mouseIsPressed) {
-    let clickPosition = createVector(mouseX, mouseY);
-    let cacc = p5.Vector.sub(pos, clickPosition);
-    cacc.setMag(15);
-    pos.add(cacc);
-  }
+  background(255);
+  let g = p5.Vector.mult(gravity, mover.mass);
+  mover.applyForce(g);
+  mover.update();
+  mover.edgeBounce();
+  mover.display();
 }
 
-function display() {
-  noStroke();
-  fill('red');
-  ellipse(pos.x, pos.y, 60);
+function mouseMoved() {
+  if (!isMouseInsideCanvas()) return;
+  mover.mouseMoved(mouseX, mouseY);
 }
 
-function displayVectors() {
-  stroke('blue');
-  line(pos.x, pos.y, pos.x + vel.x * 10, pos.y + vel.y * 10);
+function mousePressed() {
+  if (!isMouseInsideCanvas()) return;
+  mover.mousePressed(mouseX, mouseY);
+}
+
+function mouseDragged() {
+  if (!isMouseInsideCanvas()) return;
+  mover.mouseDragged(mouseX, mouseY);
+}
+
+function mouseReleased() {
+  if (!isMouseInsideCanvas()) return;
+  mover.mouseReleased();
+
+  pMVec.set(pmouseX, pmouseY);
+  mVec.set(mouseX, mouseY);
+
+  throwingForce = p5.Vector.sub(mVec, pMVec);
+  throwingForce.mult(40);
+
+  mover.applyForce(throwingForce);
 }
