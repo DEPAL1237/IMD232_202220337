@@ -1,66 +1,43 @@
-const cNum = 8;
-const rNum = 8;
-
-let rad = 0;
-let angle = 0;
+let emitter;
+let particles = [];
+let g;
+let angle;
 
 function setup() {
-  setCanvasContainer('canvas', 1, 1, true);
-  rad = width / 25;
-  console.log('rad', rad);
-  console.log('width', width);
+  setCanvasContainer('canvas', 2, 1, true);
 
-  colorMode(HSL, 360, 100, 100, 100);
-  background(360, 0, 100);
+  colorMode(HSL, 360, 100, 100);
+
+  g = createVector(0, 0.1);
+
+  background('#332F39');
+  rectMode(CENTER);
 }
 
 function draw() {
-  background(360, 0, 100);
-  angleVel = (TAU / 360) * 15;
+  background('#332F39');
+  particles.push(
+    new particle(
+      random(width),
+      -height / 12,
+      (TAU / 360) * random(360),
+      0,
+      1,
+      random(360),
+      100,
+      80,
+      random(0.01, 0.18)
+    )
+  );
 
-  angle += (TAU / 360) * 1;
-  for (let r = 0; r < rNum; r++) {
-    for (let c = 0; c < cNum; c++) {
-      let x = r * (width / (rNum + 1 / 3)) + rad * 2;
-      let y = c * (width / (cNum + 1 / 3)) + rad * 2;
-      let angleStepC = r * (TAU / 360) * 15;
-
-      let angleStepR = rNum * c * (TAU / 360) * 15;
-      push();
-      translate(x, y);
-      rotate(angle + angleStepC + angleStepR);
-
-      if (r % 2 == 0 && c % 2 == 0) {
-        fill(306, 100, 74, 60);
-        stroke(0);
-        strokeWeight(2.5);
-        ellipse(0, 0, rad * 2);
-        line(0, 0, 20, 20);
-      } else if (r % 2 == 0 && c % 2 == 1) {
-        fill(47, 100, 69, 60);
-        stroke(0);
-        strokeWeight(2.5);
-        ellipse(0, 0, rad * 2);
-        line(0, 0, 20, 20);
-      } else {
-        if (c % 2 == 1) {
-          fill(194, 100, 69, 60);
-          stroke(0);
-          strokeWeight(2.5);
-          ellipse(0, 0, rad * 2);
-          line(0, 0, 20, 20);
-        } else {
-          fill(133, 100, 69, 60);
-          stroke(0);
-          strokeWeight(2.5);
-          ellipse(0, 0, rad * 2);
-          line(0, 0, 20, 20);
-        }
-      }
-
-      fill(255);
-      ellipse(20, 20, 10);
-      pop();
+  for (let i = particles.length - 1; i >= 0; i--) {
+    const scaledG = p5.Vector.mult(g, particles[i].mass);
+    particles[i].applyForce(scaledG);
+    particles[i].update();
+    if (particles[i].isDead()) {
+      particles.splice(i, 1);
     }
+    particles[i].display();
   }
+  console.log(particles.length);
 }

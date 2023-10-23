@@ -1,51 +1,35 @@
-let pendulumA;
-let pendulumB;
-let gravity;
+let emitters = [];
+let g;
 
 function setup() {
-  setCanvasContainer('canvas', 2, 1, true);
+  setCanvasContainer('canvas', 1, 1, true);
+  colorMode(HSL, 360, 100, 100);
+  g = createVector(0, 0.1);
 
-  pendulumA = new Pendulum(width / 2, 10, height / 3, (TAU / 360) * 45, 25);
-  pendulumB = new Pendulum(
-    pendulumA.ballPos.x,
-    pendulumA.ballPos.y,
-    height / 2,
-    (TAU / 360) * 45,
-    25
-  );
-  gravity = createVector(0, 0.5);
-
-  background(255);
+  background('#252229');
 }
 
 function draw() {
-  pendulumA.applyGravity(gravity);
-  pendulumA.update();
-  background(255);
-  pendulumA.display();
+  background('#252229');
+  console.log('createdEmittersNum :', emitters.length);
 
-  pendulumB.applyGravity(gravity);
-  pendulumB.update();
-  pendulumB.setPos(pendulumA.ballPos);
-  pendulumB.display();
-}
+  for (let i = emitters.length - 1; i >= 0; i--) {
+    emitters[i].createBall();
+    emitters[i].applyGravity(g);
+    emitters[i].update();
+    emitters[i].display();
 
-function mouseMoved() {
-  pendulumA.mouseMoved(mouseX, mouseY);
-  pendulumB.mouseMoved(mouseX, mouseY);
+    if (emitters[i].isDead()) {
+      emitters.splice(i, 1);
+    }
+  }
 }
 
 function mousePressed() {
-  pendulumA.mousePressed(mouseX, mouseY);
-  pendulumB.mousePressed(mouseX, mouseY);
-}
-
-function mouseDragged() {
-  pendulumA.mouseDragged(mouseX, mouseY);
-  pendulumB.mouseDragged(mouseX, mouseY);
-}
-
-function mouseReleased() {
-  pendulumA.mouseReleased();
-  pendulumB.mouseReleased();
+  if (isMouseInsideCanvas()) {
+    for (let i = 0; i < 100; i++) {
+      const emitter = new Emitter(mouseX, mouseY);
+      emitters.push(emitter);
+    }
+  }
 }
