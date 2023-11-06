@@ -1,66 +1,36 @@
-const cNum = 8;
-const rNum = 8;
-
-let rad = 0;
-let angle = 0;
+let traffic;
+// traffic 변수 설정
+let infiniteOffset = 80;
+//infiniteOffset라는 변수값을 80으로 설정
 
 function setup() {
-  setCanvasContainer('canvas', 1, 1, true);
-  rad = width / 25;
-  console.log('rad', rad);
-  console.log('width', width);
-
+  //아래 설정들을 총합 한번만 설정
+  setCanvasContainer('canvas', 3, 2, true);
+  //캔버스 생성(3대2 비율유지)
   colorMode(HSL, 360, 100, 100, 100);
-  background(360, 0, 100);
+  //칼라모드를 hsl로 변경
+  background('white');
+  //배경색을 흰색으로 설정
+  traffic = new Traffic();
+  //traffic이라는 변수에 Traffic 클래스를 선언
+  for (let n = 0; n < 10; n++) {
+    //n은 0이고 10보다 작아질 때까지(0부터 9까지 총 10번) 1씩 더해준다.
+    // 해당 범위동안은 아래 식을 반복.
+    traffic.addVehicle(random(width), random(height));
+    //traffic의 addVehicle을 호출, 초기값을 width의 랜덤값, height의 랜덤값으로 잡음.
+  }
 }
 
 function draw() {
-  background(360, 0, 100);
-  angleVel = (TAU / 360) * 15;
+  //아래 설정들을 계속 반복해라.
+  background('white');
+  //배경색 흰색으로
+  traffic.run();
+  //traffic의 run함수 호출
+}
 
-  angle += (TAU / 360) * 1;
-  for (let r = 0; r < rNum; r++) {
-    for (let c = 0; c < cNum; c++) {
-      let x = r * (width / (rNum + 1 / 3)) + rad * 2;
-      let y = c * (width / (cNum + 1 / 3)) + rad * 2;
-      let angleStepC = r * (TAU / 360) * 15;
-
-      let angleStepR = rNum * c * (TAU / 360) * 15;
-      push();
-      translate(x, y);
-      rotate(angle + angleStepC + angleStepR);
-
-      if (r % 2 == 0 && c % 2 == 0) {
-        fill(306, 100, 74, 60);
-        stroke(0);
-        strokeWeight(2.5);
-        ellipse(0, 0, rad * 2);
-        line(0, 0, 20, 20);
-      } else if (r % 2 == 0 && c % 2 == 1) {
-        fill(47, 100, 69, 60);
-        stroke(0);
-        strokeWeight(2.5);
-        ellipse(0, 0, rad * 2);
-        line(0, 0, 20, 20);
-      } else {
-        if (c % 2 == 1) {
-          fill(194, 100, 69, 60);
-          stroke(0);
-          strokeWeight(2.5);
-          ellipse(0, 0, rad * 2);
-          line(0, 0, 20, 20);
-        } else {
-          fill(133, 100, 69, 60);
-          stroke(0);
-          strokeWeight(2.5);
-          ellipse(0, 0, rad * 2);
-          line(0, 0, 20, 20);
-        }
-      }
-
-      fill(255);
-      ellipse(20, 20, 10);
-      pop();
-    }
-  }
+function mouseDragged() {
+  //마우스를 드래그할 때
+  traffic.addVehicle(mouseX, mouseY);
+  //traffic의 addVehicle을 호출, 초기값을 mouse위치로 잡는다
 }
